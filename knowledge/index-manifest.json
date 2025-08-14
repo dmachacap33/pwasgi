@@ -1,0 +1,6 @@
+{
+  "dim": 384,
+  "shards": [
+    "./knowledge/index/index-000.json"
+  ]
+}
