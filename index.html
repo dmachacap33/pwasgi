@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>PWA RAG Chat (100% en el navegador)</title>
+  <link rel="stylesheet" href="src/ui.css" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <meta name="description" content="Chat IA con tus documentos, totalmente offline en el navegador (PWA + WebGPU)."/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/icon-192.png" alt="logo" />
+      <div>
+        <h1>RAG Chat • Local</h1>
+        <p class="sub">PWA + WebGPU · Gratis · Sin servidor</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="installBtn" class="btn secondary">Instalar</button>
+      <a class="btn" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>1) Carga y “entrena” tus documentos</h2>
+      <p class="muted">Soporta .docx, .xlsx, .csv, .txt (todo se procesa en tu navegador). Los embeddings quedan guardados en tu navegador (IndexedDB).</p>
+
+      <div class="uploader">
+        <input id="fileInput" type="file" multiple accept=".docx,.xlsx,.csv,.txt" />
+        <button id="indexBtn" class="btn">Indexar</button>
+        <button id="clearDbBtn" class="btn danger">Borrar Base</button>
+      </div>
+      <div id="filesList" class="files"></div>
+      <div id="indexStatus" class="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>2) Chat con IA (en el navegador)</h2>
+      <div class="settings">
+        <label>Modelo (WebLLM):
+          <select id="modelSelect">
+            <option value="TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC">TinyLlama-1.1B (rápido, ligero)</option>
+            <option value="Phi-2-q4f32_1-MLC">Phi-2 (mejor, más pesado)</option>
+          </select>
+        </label>
+        <label>Top-K:
+          <input id="topK" type="number" min="1" max="10" value="5" />
+        </label>
+        <label>Temperatura:
+          <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.3" />
+        </label>
+      </div>
+
+      <div id="chat" class="chat"></div>
+
+      <div class="chatbar">
+        <textarea id="userInput" rows="2" placeholder="Pregúntame sobre tus documentos… (Ctrl+Enter para enviar)"></textarea>
+        <button id="sendBtn" class="btn">Enviar</button>
+      </div>
+      <div id="genStatus" class="status"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <small>Hecho con <a href="https://github.com/mlc-ai/web-llm" target="_blank" rel="noopener">WebLLM</a> y <a href="https://github.com/xenova/transformers.js" target="_blank" rel="noopener">Transformers.js</a>. 100% cliente.</small>
+  </footer>
+
+  <script type="module" src="src/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
+</body>
+</html>
