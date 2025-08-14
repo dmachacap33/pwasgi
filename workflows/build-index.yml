@@ -1,0 +1,32 @@
+name: build-index
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'knowledge/pdfs/**'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install sentence-transformers pdfminer.six
+      - name: Build index
+        run: python scripts/build_index.py
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add knowledge/index/ knowledge/index-manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes";
+          else
+            git commit -m "Update index from PDFs"
+            git push
+          fi
